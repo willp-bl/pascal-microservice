@@ -1,0 +1,7 @@
+.idea
+*.o
+*.exe
+*.ppu
+brookframework
+bin/
+*.log
