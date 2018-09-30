@@ -5,7 +5,7 @@ unit Brokers;
 interface
 
 uses
-  BrookFCLHTTPAppBroker;
+  BrookFCLHttpAppBroker;
 
 implementation
 
