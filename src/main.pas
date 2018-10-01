@@ -102,12 +102,21 @@ end;
 
 // End of actions
 
+function GetPortNumber(): String;
+var
+    Port: String;
+begin
+    Port := GetEnv('PORT');
+    if Port = '' then
+        Port := '4321';
+    GetPortNumber := Port;
+end;
+
 initialization
   TRootAction.Register(''); // no / for root
   THelloWorldAction.Register('/hello');
   TFactoralAction.Register('/factoral');
   TPathAction.Register('/path');
-  // TODO: get this from an env var
-  BrookSettings.Port := 4321;
+  BrookSettings.Port := StrToInt(GetPortNumber);
 
 end.
