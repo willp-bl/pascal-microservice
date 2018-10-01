@@ -13,25 +13,25 @@ uses
   SysUtils;
 
 type
-  TRootAction = class(TBrookAction)
+  TWPAction = class(TBrookAction)
   public
-    procedure Get; override;
     procedure Request(Request: TBrookRequest; Response: TBrookResponse); override;
   end;
-  THelloWorldAction = class(TBrookAction)
+  TRootAction = class(TWPAction)
   public
     procedure Get; override;
-    procedure Request(Request: TBrookRequest; Response: TBrookResponse); override;
   end;
-  TFactoralAction = class(TBrookAction)
+  THelloWorldAction = class(TWPAction)
   public
     procedure Get; override;
-    procedure Request(Request: TBrookRequest; Response: TBrookResponse); override;
   end;
-  TPathAction = class(TBrookAction)
+  TFactoralAction = class(TWPAction)
   public
     procedure Get; override;
-    procedure Request(Request: TBrookRequest; Response: TBrookResponse); override;
+  end;
+  TPathAction = class(TWPAction)
+  public
+    procedure Get; override;
   end;
 
 implementation
@@ -45,29 +45,20 @@ implementation
 
 // overload TBrookRouter.Request to log all requests??
 
-// should probably just log this when the response is served...
-procedure LogRequest(Method: string; Request: TBrookRequest);
+procedure LogRequest(Method: string; Request: TBrookRequest; Response: TBrookResponse);
 begin
   Write(Request.RemoteAddress+' - - '+FormatDateTime('[DD"/"mmm"/"YYYY:HH:MM:SS]', Now)+' "'+Method+' '+Request.URI+' HTTP/1.0" ');
-end;
-
-procedure LogResponse(Response: TBrookResponse);
-begin
   WriteLn(IntToStr(Response.Code)+' '+IntToStr(Response.Content.Length));
   // add referer, user agent & size of request??
 end;
 
-// Actions
-
-// Root procedures
-
-procedure TRootAction.Request(Request: TBrookRequest; Response: TBrookResponse);
+procedure TWPAction.Request(Request: TBrookRequest; Response: TBrookResponse);
 begin
-  LogRequest(Method, Request);
-  Get;
-  LogResponse(Response);
+  Inherited;
+  LogRequest(Method, Request, Response);
 end;
 
+// Root procedures
 procedure TRootAction.Get;
 begin
   Write('<a href="/hello">see a hello</a><br>');
@@ -76,28 +67,12 @@ begin
 end;
 
 // Hello World procedures
-
-procedure THelloWorldAction.Request(Request: TBrookRequest; Response: TBrookResponse);
-begin
-  LogRequest(Method, Request);
-  Get;
-  LogResponse(Response);
-end;
-
 procedure THelloWorldAction.Get;
 begin
   Write('Hello world!<br>');
 end;
 
 // Factoral procedures (currently just prints all query params to the page)
-
-procedure TFactoralAction.Request(Request: TBrookRequest; Response: TBrookResponse);
-begin
-  LogRequest(Method, Request);
-  Get;
-  LogResponse(Response);
-end;
-
 procedure TFactoralAction.Get;
 var
   Index: Integer;
@@ -112,14 +87,6 @@ begin
 end;
 
 // Path param procedures
-
-procedure TPathAction.Request(Request: TBrookRequest; Response: TBrookResponse);
-begin
-  LogRequest(Method, Request);
-  Get;
-  LogResponse(Response);
-end;
-
 procedure TPathAction.Get;
 var
   Index: Integer;
