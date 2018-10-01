@@ -63,7 +63,7 @@ procedure TRootAction.Get;
 begin
   Write('<a href="/hello">see a hello</a><br>');
   Write('<a href="/factoral?fac=1">see a factoral</a><br>');
-  Write('<a href="/path/is/real">see a path in action</a>');
+  Write('<a href="/path/10">see a path in action</a>');
 end;
 
 // Hello World procedures
@@ -93,11 +93,11 @@ var
   Name, Value: string;
 begin
   Write('Hello paths!<br>');
-//  for Index := 0 to Pred(Values.Count) do
-//  begin
-//    Values.GetNameValue(Index, Name, Value);
-//    Write(Name+': '+Value+'<br>');
-//  end
+  for Index := 0 to Pred(Variables.Count) do
+  begin
+    Variables.GetNameValue(Index, Name, Value);
+    Write(Name+': '+Value+'<br>');
+  end
 end;
 
 // End of actions
@@ -116,7 +116,7 @@ initialization
   TRootAction.Register(''); // no / for root
   THelloWorldAction.Register('/hello');
   TFactoralAction.Register('/factoral');
-  TPathAction.Register('/path');
+  TPathAction.Register('/path/:variable1');
   BrookSettings.Port := StrToInt(GetPortNumber);
 
 end.
