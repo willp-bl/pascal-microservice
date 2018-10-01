@@ -9,6 +9,7 @@ uses
   BrookHttpDefs,
   BrookUtils,
   Dos,
+  FPJSON,
   StrUtils,
   SysUtils;
 
@@ -33,23 +34,30 @@ type
   public
     procedure Get; override;
   end;
+  TJSONAction = class(TWPAction)
+  public
+    procedure Get; override;
+  end;
 
 implementation
 
 // Logging procedures
 
 // add an error handler? unrecognised urls don't get logged right now
-
-// see https://github.com/graemeg/freepascal/blob/master/packages/fcl-web/src/base/httpdefs.pp THTTPHeader & TRequest
-// Add Request.HTTPUserAgent?
-
 // overload TBrookRouter.Request to log all requests??
-
 procedure LogRequest(Method: string; Request: TBrookRequest; Response: TBrookResponse);
 begin
-  Write(Request.RemoteAddress+' - - '+FormatDateTime('[DD"/"mmm"/"YYYY:HH:MM:SS]', Now)+' "'+Method+' '+Request.URI+' HTTP/1.0" ');
-  WriteLn(IntToStr(Response.Code)+' '+IntToStr(Response.Content.Length));
-  // add referer, user agent & size of request??
+  Write(Request.RemoteAddress+' - - '+FormatDateTime('[DD"/"mmm"/"YYYY:HH:MM:SS]', Now)+' "'+Method+Request.HeaderLine+'" ');
+  Write(IntToStr(Response.Code)+' '+IntToStr(Response.Content.Length)+' ');
+  if Request.Referer <> '' then
+    Write('"'+Request.Referer+'" ')
+  else
+    Write('- ');
+  if Request.UserAgent <> '' then
+    Write('"'+Request.UserAgent+'"')
+  else
+    Write('-');
+  WriteLn;
 end;
 
 procedure TWPAction.Request(Request: TBrookRequest; Response: TBrookResponse);
@@ -63,7 +71,8 @@ procedure TRootAction.Get;
 begin
   Write('<a href="/hello">see a hello</a><br>');
   Write('<a href="/factoral?fac=1">see a factoral</a><br>');
-  Write('<a href="/path/10">see a path in action</a>');
+  Write('<a href="/path/10">see a path in action</a><br>');
+  Write('<a href="/json">see some json</a><br>');
 end;
 
 // Hello World procedures
@@ -100,6 +109,17 @@ begin
   end
 end;
 
+// JSON
+procedure TJSONAction.Get;
+var
+  json: TJSONObject;
+begin
+  HttpResponse.ContentType := 'application/json';
+  json := TJSONObject.Create(['message', 'hello world']);
+  Write(json.AsJSON);
+  json.Free;
+end;
+
 // End of actions
 
 function GetPortNumber(): Integer;
@@ -117,6 +137,7 @@ initialization
   THelloWorldAction.Register('/hello');
   TFactoralAction.Register('/factoral');
   TPathAction.Register('/path/:variable1');
+  TJSONAction.Register('/json');
   BrookSettings.Port := GetPortNumber;
 
 end.
