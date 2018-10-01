@@ -38,6 +38,11 @@ type
   public
     procedure Get; override;
   end;
+  TPostAction = class(TWPAction)
+  public
+    procedure Get; override;
+    procedure Post; override;
+  end;
 
 implementation
 
@@ -73,6 +78,7 @@ begin
   Write('<a href="/factoral?fac=1">see a factoral</a><br>');
   Write('<a href="/path/10">see a path in action</a><br>');
   Write('<a href="/json">see some json</a><br>');
+  Write('<a href="/post/form">see a form to post</a><br>');
 end;
 
 // Hello World procedures
@@ -85,7 +91,7 @@ end;
 procedure TFactoralAction.Get;
 var
   Index: Integer;
-  Name, Value: string;
+  Name, Value: String;
 begin
   Write('Hello factoral!<br>');
   for Index := 0 to Pred(Params.Count) do
@@ -99,7 +105,7 @@ end;
 procedure TPathAction.Get;
 var
   Index: Integer;
-  Name, Value: string;
+  Name, Value: String;
 begin
   Write('Hello paths!<br>');
   for Index := 0 to Pred(Variables.Count) do
@@ -120,6 +126,30 @@ begin
   json.Free;
 end;
 
+// Post form
+procedure TPostAction.Get;
+begin
+  Write('<form method="POST" action="/post/form">');
+  Write('<input name="freetext" value="write text here" />');
+  Write('<button type="submit">submit</button>');
+  Write('</form>');
+end;
+
+procedure TPostAction.Post;
+var
+  Index: Integer;
+  Name, Value: String;
+begin
+  Write('Hello post form!<br>');
+  for Index := 0 to Pred(Fields.Count) do
+  begin
+    Fields.GetNameValue(Index, Name, Value);
+    Write(Name+': '+Value+'<br>');
+  end
+end;
+
+// Post action
+
 // End of actions
 
 function GetPortNumber(): Integer;
@@ -138,6 +168,7 @@ initialization
   TFactoralAction.Register('/factoral');
   TPathAction.Register('/path/:variable1');
   TJSONAction.Register('/json');
+  TPostAction.Register('/post/form');
   BrookSettings.Port := GetPortNumber;
 
 end.
