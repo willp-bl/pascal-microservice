@@ -74,6 +74,7 @@ end;
 // Root procedures
 procedure TRootAction.Get;
 begin
+  Write('<h1>welcome to paascal</h1><br>');
   Write('<a href="/hello">see a hello</a><br>');
   Write('<a href="/factoral?fac=1">see a factoral</a><br>');
   Write('<a href="/path/10">see a path in action</a><br>');
